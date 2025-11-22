@@ -1,0 +1,336 @@
+@{
+    ViewData["Title"] = "Oyun";
+}
+
+<div class="min-h-screen p-2 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-4 md:p-8">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div id="player1Info" class="w-full md:flex-1 p-4 md:p-6 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
+                    <div class="text-xl md:text-2xl font-bold" id="player1Name">Oyuncu 1</div>
+                    <div class="text-base md:text-lg mt-2">Tahtada: <span id="player1Pieces" class="font-bold text-2xl md:text-3xl">0</span></div>
+                    <div class="text-sm">Koyulan: <span id="player1Placed">0</span>/9</div>
+                </div>
+                <div class="text-3xl md:text-4xl font-bold text-gray-700">⚔️</div>
+                <div id="player2Info" class="w-full md:flex-1 p-4 md:p-6 rounded-2xl bg-gray-100 text-gray-700 shadow-lg">
+                    <div class="text-xl md:text-2xl font-bold" id="player2Name">Oyuncu 2</div>
+                    <div class="text-base md:text-lg mt-2">Tahtada: <span id="player2Pieces" class="font-bold text-2xl md:text-3xl">0</span></div>
+                    <div class="text-sm">Koyulan: <span id="player2Placed">0</span>/9</div>
+                </div>
+            </div>
+            
+            <div class="text-center mb-6 p-4 md:p-5 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl shadow-md">
+                <div class="font-bold text-xl md:text-2xl text-gray-800" id="gameStatus">Bekleniyor...</div>
+            </div>
+            
+            <div id="questionPanel" class="mb-6 p-4 md:p-6 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl border-4 border-yellow-400 shadow-lg">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-sm font-semibold text-orange-600" id="questionCategory">Kategori</div>
+                    <div class="text-xl md:text-2xl font-bold" id="timerDisplay"><span id="timerSeconds">20</span>s</div>
+                </div>
+                <div class="text-lg md:text-2xl font-bold mb-5 text-gray-800" id="questionText">Soru yükleniyor...</div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="optionsContainer"></div>
+            </div>
+            
+            <div class="relative bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl p-4 md:p-8 border-4 md:border-8 border-amber-800 shadow-2xl">
+                <svg id="gameBoard" viewBox="0 0 700 700" class="w-full h-full max-w-2xl mx-auto">
+                    <line x1="100" y1="100" x2="600" y2="100" stroke="#8B4513" stroke-width="4" />
+                    <line x1="600" y1="100" x2="600" y2="600" stroke="#8B4513" stroke-width="4" />
+                    <line x1="600" y1="600" x2="100" y2="600" stroke="#8B4513" stroke-width="4" />
+                    <line x1="100" y1="600" x2="100" y2="100" stroke="#8B4513" stroke-width="4" />
+                    <line x1="200" y1="200" x2="500" y2="200" stroke="#8B4513" stroke-width="4" />
+                    <line x1="500" y1="200" x2="500" y2="500" stroke="#8B4513" stroke-width="4" />
+                    <line x1="500" y1="500" x2="200" y2="500" stroke="#8B4513" stroke-width="4" />
+                    <line x1="200" y1="500" x2="200" y2="200" stroke="#8B4513" stroke-width="4" />
+                    <line x1="300" y1="300" x2="400" y2="300" stroke="#8B4513" stroke-width="4" />
+                    <line x1="400" y1="300" x2="400" y2="400" stroke="#8B4513" stroke-width="4" />
+                    <line x1="400" y1="400" x2="300" y2="400" stroke="#8B4513" stroke-width="4" />
+                    <line x1="300" y1="400" x2="300" y2="300" stroke="#8B4513" stroke-width="4" />
+                    <line x1="100" y1="350" x2="300" y2="350" stroke="#8B4513" stroke-width="4" />
+                    <line x1="400" y1="350" x2="600" y2="350" stroke="#8B4513" stroke-width="4" />
+                    <line x1="350" y1="100" x2="350" y2="300" stroke="#8B4513" stroke-width="4" />
+                    <line x1="350" y1="400" x2="350" y2="600" stroke="#8B4513" stroke-width="4" />
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="resultModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 text-center max-w-2xl mx-4">
+        <div class="text-6xl md:text-8xl mb-6">🏆</div>
+        <h1 class="text-4xl md:text-6xl font-bold text-gray-800 mb-4">Oyun Bitti!</h1>
+        <p class="text-3xl md:text-5xl font-bold text-green-600 mb-8" id="winnerText">Kazanan</p>
+        <button onclick="window.location.href='/Home/Index'" class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 md:py-6 px-8 md:px-12 rounded-2xl shadow-lg transform transition hover:scale-105 text-xl md:text-2xl">
+            🏠 Ana Sayfa
+        </button>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const positions = [
+        [100, 100], [350, 100], [600, 100], [100, 350], [600, 350], [100, 600], [350, 600], [600, 600],
+        [200, 200], [350, 200], [500, 200], [200, 350], [500, 350], [200, 500], [350, 500], [500, 500],
+        [300, 300], [350, 300], [400, 300], [300, 350], [400, 350], [300, 400], [350, 400], [400, 400]
+    ];
+    
+    let gameState = null;
+    let currentUserId = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value';
+    let questionTimer = null;
+    let moveTimer = null;
+    
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/gameHub")
+        .build();
+    
+    connection.on("MatchFound", (state) => {
+        gameState = state;
+        updateUI();
+        startQuestionTimer();
+    });
+    
+    connection.on("QuestionAnswered", (data) => {
+        clearInterval(questionTimer);
+        gameState = data.state;
+        
+        if (data.correct) {
+            document.getElementById('questionPanel').style.display = 'none';
+            startMoveTimer();
+        } else {
+            startQuestionTimer();
+        }
+        
+        updateUI();
+    });
+    
+    connection.on("PiecePlaced", (state) => {
+        clearInterval(moveTimer);
+        gameState = state;
+        updateUI();
+        
+        if (gameState.showQuestion) {
+            document.getElementById('questionPanel').style.display = 'block';
+            startQuestionTimer();
+        } else {
+            startMoveTimer();
+        }
+    });
+    
+    connection.on("PieceMoved", (state) => {
+        clearInterval(moveTimer);
+        gameState = state;
+        updateUI();
+        
+        if (gameState.showQuestion) {
+            document.getElementById('questionPanel').style.display = 'block';
+            startQuestionTimer();
+        } else {
+            startMoveTimer();
+        }
+    });
+    
+    connection.on("PieceRemoved", (state) => {
+        clearInterval(moveTimer);
+        gameState = state;
+        updateUI();
+        
+        if (gameState.showQuestion) {
+            document.getElementById('questionPanel').style.display = 'block';
+            startQuestionTimer();
+        } else {
+            startMoveTimer();
+        }
+    });
+    
+    connection.on("MatchEnded", (data) => {
+        clearInterval(questionTimer);
+        clearInterval(moveTimer);
+        document.getElementById('winnerText').textContent = data.winnerName + ' Kazandı!';
+        document.getElementById('resultModal').classList.remove('hidden');
+    });
+    
+    connection.on("OpponentQuit", (winnerName) => {
+        clearInterval(questionTimer);
+        clearInterval(moveTimer);
+        document.getElementById('winnerText').textContent = 'Rakip oyundan çıktı! ' + winnerName + ' Kazandı!';
+        document.getElementById('resultModal').classList.remove('hidden');
+    });
+    
+    connection.on("ForceDisconnect", (reason) => {
+        alert(reason);
+        window.location.href = '/Account/Login';
+    });
+    
+    connection.start().catch(err => console.error(err));
+    
+    setInterval(() => {
+        connection.invoke("UpdateActivity").catch(err => console.error(err));
+    }, 60000);
+    
+    function startQuestionTimer() {
+        let timeLeft = 20;
+        document.getElementById('timerSeconds').textContent = timeLeft;
+        
+        clearInterval(questionTimer);
+        questionTimer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timerSeconds').textContent = timeLeft;
+            
+            if (timeLeft <= 5) {
+                document.getElementById('timerDisplay').classList.add('text-red-600', 'animate-pulse');
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(questionTimer);
+            }
+        }, 1000);
+    }
+    
+    function startMoveTimer() {
+        let timeLeft = 30;
+        
+        clearInterval(moveTimer);
+        moveTimer = setInterval(() => {
+            timeLeft--;
+            
+            if (timeLeft <= 0) {
+                clearInterval(moveTimer);
+            }
+        }, 1000);
+    }
+    
+    function updateUI() {
+        if (!gameState) return;
+        
+        document.getElementById('player1Name').textContent = gameState.player1Name;
+        document.getElementById('player2Name').textContent = gameState.player2Name;
+        document.getElementById('player1Pieces').textContent = gameState.player1PiecesOnBoard;
+        document.getElementById('player2Pieces').textContent = gameState.player2PiecesOnBoard;
+        document.getElementById('player1Placed').textContent = gameState.placedPieces1;
+        document.getElementById('player2Placed').textContent = gameState.placedPieces2;
+        
+        updateHighlight();
+        updateStatus();
+        
+        if (gameState.showQuestion && gameState.currentQuestion) {
+            document.getElementById('questionPanel').style.display = 'block';
+            document.getElementById('questionCategory').textContent = gameState.currentQuestion.category;
+            document.getElementById('questionText').textContent = gameState.currentQuestion.text;
+            
+            const options = [
+                gameState.currentQuestion.option1,
+                gameState.currentQuestion.option2,
+                gameState.currentQuestion.option3,
+                gameState.currentQuestion.option4
+            ].filter(o => o);
+            
+            document.getElementById('optionsContainer').innerHTML = options.map((opt, idx) => 
+                `<button onclick="answerQuestion(${idx})" class="bg-white hover:bg-yellow-300 text-gray-800 font-bold py-3 md:py-4 px-4 md:px-6 rounded-xl shadow-md transform transition hover:scale-105 border-2 border-yellow-400 text-base md:text-lg">${opt}</button>`
+            ).join('');
+        } else {
+            document.getElementById('questionPanel').style.display = 'none';
+        }
+        
+        drawBoard();
+    }
+    
+    function updateHighlight() {
+        const p1 = document.getElementById('player1Info');
+        const p2 = document.getElementById('player2Info');
+        
+        const isPlayer1Turn = gameState.currentPlayer === 1;
+        
+        if (isPlayer1Turn) {
+            p1.className = 'w-full md:flex-1 p-4 md:p-6 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg';
+            p2.className = 'w-full md:flex-1 p-4 md:p-6 rounded-2xl bg-gray-100 text-gray-700 shadow-lg';
+        } else {
+            p1.className = 'w-full md:flex-1 p-4 md:p-6 rounded-2xl bg-gray-100 text-gray-700 shadow-lg';
+            p2.className = 'w-full md:flex-1 p-4 md:p-6 rounded-2xl bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg';
+        }
+    }
+    
+    function updateStatus() {
+        const statusMap = {
+            'placement': '🎯 Taş Yerleştirme',
+            'movement': '🎮 Taş Hareket Ettirme',
+            'remove': '🎉 Değirmen! Rakip Taşı Kaldır'
+        };
+        document.getElementById('gameStatus').textContent = statusMap[gameState.gamePhase] || 'Oyun';
+    }
+    
+    function drawBoard() {
+        const svg = document.getElementById('gameBoard');
+        svg.querySelectorAll('.game-piece').forEach(p => p.remove());
+        
+        positions.forEach((pos, idx) => {
+            const [x, y] = pos;
+            const piece = gameState.board[idx];
+            
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.classList.add('game-piece');
+            g.style.cursor = 'pointer';
+            g.onclick = () => handleClick(idx);
+            
+            const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c.setAttribute('cx', x);
+            c.setAttribute('cy', y);
+            c.setAttribute('r', window.innerWidth < 768 ? '35' : '25');
+            c.setAttribute('fill', piece === 0 ? '#FFF' : piece === 1 ? '#3B82F6' : '#EF4444');
+            c.setAttribute('stroke', '#8B4513');
+            c.setAttribute('stroke-width', '3');
+            g.appendChild(c);
+            
+            if (piece !== 0) {
+                const ic = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                ic.setAttribute('cx', x);
+                ic.setAttribute('cy', y);
+                ic.setAttribute('r', window.innerWidth < 768 ? '20' : '15');
+                ic.setAttribute('fill', '#FFF');
+                ic.setAttribute('opacity', '0.3');
+                g.appendChild(ic);
+            }
+            
+            svg.appendChild(g);
+        });
+    }
+    
+    let selectedPiece = null;
+    
+    async function handleClick(position) {
+        if (!gameState) return;
+        
+        const isMyTurn = (gameState.currentPlayer === 1 && gameState.player1Id === currentUserId) ||
+                        (gameState.currentPlayer === 2 && gameState.player2Id === currentUserId);
+        
+        if (!isMyTurn) return;
+        
+        if (gameState.showQuestion) return;
+        
+        if (gameState.gamePhase === 'placement') {
+            await connection.invoke("PlacePiece", gameState.matchId, position);
+        } else if (gameState.gamePhase === 'movement') {
+            if (selectedPiece === null) {
+                if (gameState.board[position] === gameState.currentPlayer) {
+                    selectedPiece = position;
+                    drawBoard();
+                }
+            } else {
+                await connection.invoke("MovePiece", gameState.matchId, selectedPiece, position);
+                selectedPiece = null;
+            }
+        } else if (gameState.gamePhase === 'remove') {
+            await connection.invoke("RemovePiece", gameState.matchId, position);
+        }
+    }
+    
+    async function answerQuestion(optionIndex) {
+        const isMyTurn = (gameState.currentPlayer === 1 && gameState.player1Id === currentUserId) ||
+                        (gameState.currentPlayer === 2 && gameState.player2Id === currentUserId);
+        
+        if (!isMyTurn) return;
+        
+        await connection.invoke("AnswerQuestion", gameState.matchId, optionIndex);
+    }
+</script>
+}

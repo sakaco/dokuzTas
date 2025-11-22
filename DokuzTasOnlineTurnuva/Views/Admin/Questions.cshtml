@@ -1,0 +1,111 @@
+@model IEnumerable<DokuzTasOnlineTurnuva.Models.Question>
+
+@{
+    ViewData["Title"] = "Soru Bankası";
+}
+
+<div class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
+                ❓ Soru Bankası
+            </h1>
+            
+            <div class="mb-6">
+                <button onclick="document.getElementById('createModal').classList.remove('hidden')" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg">
+                    ➕ Yeni Soru
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                @foreach (var question in Model)
+                {
+                    <div class="border-2 @(question.IsActive ? "border-green-200 bg-green-50" : "border-gray-200 bg-gray-50") p-4 rounded-xl">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs mr-2">@question.Category</span>
+                                <span class="font-bold text-lg">@question.Text</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <form asp-action="ToggleQuestion" asp-route-id="@question.Id" method="post" class="inline">
+                                    <button type="submit" class="@(question.IsActive ? "bg-yellow-500 hover:bg-yellow-600" : "bg-green-500 hover:bg-green-600") text-white px-3 py-1 rounded text-sm">
+                                        @(question.IsActive ? "Pasif" : "Aktif")
+                                    </button>
+                                </form>
+                                <form asp-action="DeleteQuestion" asp-route-id="@question.Id" method="post" class="inline">
+                                    <button type="submit" onclick="return confirm('Emin misiniz?')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                        Sil
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                            <div class="@(question.CorrectAnswer == 0 ? "bg-green-200" : "bg-white") p-2 rounded border">
+                                @question.Option1
+                            </div>
+                            <div class="@(question.CorrectAnswer == 1 ? "bg-green-200" : "bg-white") p-2 rounded border">
+                                @question.Option2
+                            </div>
+                            @if (!string.IsNullOrEmpty(question.Option3))
+                            {
+                                <div class="@(question.CorrectAnswer == 2 ? "bg-green-200" : "bg-white") p-2 rounded border">
+                                    @question.Option3
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(question.Option4))
+                            {
+                                <div class="@(question.CorrectAnswer == 3 ? "bg-green-200" : "bg-white") p-2 rounded border">
+                                    @question.Option4
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="createModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+    <div class="bg-white rounded-2xl p-8 max-w-2xl w-full mx-4 my-8">
+        <h2 class="text-2xl font-bold mb-4">Yeni Soru Oluştur</h2>
+        <form asp-action="CreateQuestion" method="post">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Kategori</label>
+                <input name="Category" required class="w-full px-4 py-2 border rounded" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Soru Metni</label>
+                <textarea name="Text" required rows="3" class="w-full px-4 py-2 border rounded"></textarea>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Seçenek 1</label>
+                <input name="Option1" required class="w-full px-4 py-2 border rounded" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Seçenek 2</label>
+                <input name="Option2" required class="w-full px-4 py-2 border rounded" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Seçenek 3 (Opsiyonel)</label>
+                <input name="Option3" class="w-full px-4 py-2 border rounded" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Seçenek 4 (Opsiyonel)</label>
+                <input name="Option4" class="w-full px-4 py-2 border rounded" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2">Doğru Cevap (0-3 arası)</label>
+                <input name="CorrectAnswer" type="number" min="0" max="3" required class="w-full px-4 py-2 border rounded" />
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                    Oluştur
+                </button>
+                <button type="button" onclick="document.getElementById('createModal').classList.add('hidden')" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                    İptal
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

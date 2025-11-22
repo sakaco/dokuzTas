@@ -1,0 +1,129 @@
+@model DokuzTasOnlineTurnuva.Models.SystemSettings
+
+@{
+    ViewData["Title"] = "Sistem Ayarları";
+}
+
+<div class="min-h-screen p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
+                ⚙️ Sistem Ayarları
+            </h1>
+            
+            <form asp-action="UpdateSettings" method="post">
+                <input asp-for="Id" type="hidden" />
+                
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Oyun Limitleri</h2>
+                    
+                    <div class="mb-4">
+                        <label asp-for="MaxDailyMatches" class="block text-gray-700 font-bold mb-2">
+                            Günlük Maksimum Maç Sayısı
+                        </label>
+                        <input asp-for="MaxDailyMatches" type="number" min="1" max="20" class="w-full px-4 py-2 border rounded" />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="QuestionTimeLimit" class="block text-gray-700 font-bold mb-2">
+                            Soru Süresi (saniye)
+                        </label>
+                        <input asp-for="QuestionTimeLimit" type="number" min="10" max="60" class="w-full px-4 py-2 border rounded" />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="MoveTimeLimit" class="block text-gray-700 font-bold mb-2">
+                            Hamle Süresi (saniye)
+                        </label>
+                        <input asp-for="MoveTimeLimit" type="number" min="10" max="120" class="w-full px-4 py-2 border rounded" />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="InactivityLimit" class="block text-gray-700 font-bold mb-2">
+                            İnaktivite Limiti (dakika)
+                        </label>
+                        <input asp-for="InactivityLimit" type="number" min="1" max="30" class="w-full px-4 py-2 border rounded" />
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Eleme Maçları Saatleri</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label asp-for="QuarterFinalStartTime" class="block text-gray-700 font-bold mb-2">
+                                Çeyrek Final Başlangıç
+                            </label>
+                            <input asp-for="QuarterFinalStartTime" type="time" class="w-full px-4 py-2 border rounded" />
+                        </div>
+                        <div>
+                            <label asp-for="QuarterFinalEndTime" class="block text-gray-700 font-bold mb-2">
+                                Çeyrek Final Bitiş
+                            </label>
+                            <input asp-for="QuarterFinalEndTime" type="time" class="w-full px-4 py-2 border rounded" />
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label asp-for="SemiFinalStartTime" class="block text-gray-700 font-bold mb-2">
+                                Yarı Final Başlangıç
+                            </label>
+                            <input asp-for="SemiFinalStartTime" type="time" class="w-full px-4 py-2 border rounded" />
+                        </div>
+                        <div>
+                            <label asp-for="SemiFinalEndTime" class="block text-gray-700 font-bold mb-2">
+                                Yarı Final Bitiş
+                            </label>
+                            <input asp-for="SemiFinalEndTime" type="time" class="w-full px-4 py-2 border rounded" />
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label asp-for="FinalStartTime" class="block text-gray-700 font-bold mb-2">
+                                Final Başlangıç
+                            </label>
+                            <input asp-for="FinalStartTime" type="time" class="w-full px-4 py-2 border rounded" />
+                        </div>
+                        <div>
+                            <label asp-for="FinalEndTime" class="block text-gray-700 font-bold mb-2">
+                                Final Bitiş
+                            </label>
+                            <input asp-for="FinalEndTime" type="time" class="w-full px-4 py-2 border rounded" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">Puan & Averaj</h2>
+                    
+                    <div class="mb-4">
+                        <label asp-for="PointsPerWin" class="block text-gray-700 font-bold mb-2">
+                            Kazanılan Maç Puanı
+                        </label>
+                        <input asp-for="PointsPerWin" type="number" min="1" max="10" class="w-full px-4 py-2 border rounded" />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="AverajPerQuit" class="block text-gray-700 font-bold mb-2">
+                            Oyundan Çıkma Averajı (+/-)
+                        </label>
+                        <input asp-for="AverajPerQuit" type="number" min="1" max="20" class="w-full px-4 py-2 border rounded" />
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="DailyBonusIncrement" class="block text-gray-700 font-bold mb-2">
+                            Günlük Bonus Artışı
+                        </label>
+                        <input asp-for="DailyBonusIncrement" type="number" min="1" max="20" class="w-full px-4 py-2 border rounded" />
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg">
+                    💾 Kaydet
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

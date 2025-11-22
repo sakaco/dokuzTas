@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Admin Panel";
+}
+
+<div class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
+                ⚙️ Admin Panel
+            </h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a asp-action="Players" class="bg-gradient-to-br from-blue-100 to-blue-200 p-8 rounded-2xl text-center hover:shadow-lg transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">👥</div>
+                    <div class="text-2xl font-bold text-blue-800">Oyuncular</div>
+                    <div class="text-blue-600 mt-2">Oyuncu yönetimi</div>
+                </a>
+                
+                <a asp-action="Settings" class="bg-gradient-to-br from-green-100 to-green-200 p-8 rounded-2xl text-center hover:shadow-lg transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">⚙️</div>
+                    <div class="text-2xl font-bold text-green-800">Ayarlar</div>
+                    <div class="text-green-600 mt-2">Sistem ayarları</div>
+                </a>
+                
+                <a asp-action="Matches" class="bg-gradient-to-br from-purple-100 to-purple-200 p-8 rounded-2xl text-center hover:shadow-lg transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">🎮</div>
+                    <div class="text-2xl font-bold text-purple-800">Maçlar</div>
+                    <div class="text-purple-600 mt-2">Maç geçmişi</div>
+                </a>
+                
+                <a asp-action="Reports" class="bg-gradient-to-br from-yellow-100 to-yellow-200 p-8 rounded-2xl text-center hover:shadow-lg transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">📊</div>
+                    <div class="text-2xl font-bold text-yellow-800">Raporlar</div>
+                    <div class="text-yellow-600 mt-2">Haftalık raporlar</div>
+                </a>
+                
+                <a asp-action="Questions" class="bg-gradient-to-br from-red-100 to-red-200 p-8 rounded-2xl text-center hover:shadow-lg transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">❓</div>
+                    <div class="text-2xl font-bold text-red-800">Sorular</div>
+                    <div class="text-red-600 mt-2">Soru bankası</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

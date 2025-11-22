@@ -1,0 +1,140 @@
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-12 mb-8">
+            <div class="text-center mb-8">
+                <div class="text-6xl md:text-8xl mb-4">🏆</div>
+                <h1 class="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4">
+                    Dokuz Taş Turnuvası
+                </h1>
+                <p class="text-gray-600 text-xl">Hoş Geldin, @User.Identity?.Name!</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gradient-to-br from-blue-100 to-blue-200 p-6 rounded-2xl text-center">
+                    <div class="text-4xl mb-2">👥</div>
+                    <div class="text-2xl font-bold text-blue-800" id="queueCount">@ViewBag.QueueCount</div>
+                    <div class="text-blue-600">Bekleyen Oyuncu</div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-2xl text-center">
+                    <div class="text-4xl mb-2">📅</div>
+                    <div class="text-2xl font-bold text-green-800">@DateTime.Today.ToString("dddd")</div>
+                    <div class="text-green-600">Bugün</div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-6 rounded-2xl text-center">
+                    <div class="text-4xl mb-2">🎮</div>
+                    <div class="text-2xl font-bold text-purple-800">@(ViewBag.CanPlay ? "Aktif" : "Limit")</div>
+                    <div class="text-purple-600">Durum</div>
+                </div>
+            </div>
+            
+            @if (ViewBag.CanPlay)
+            {
+                <button onclick="findMatch()" id="findMatchBtn" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg transform transition hover:scale-105 text-2xl mb-4">
+                    🎮 Maç Bul
+                </button>
+                <button onclick="cancelMatch()" id="cancelMatchBtn" class="hidden w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg transform transition hover:scale-105 text-2xl">
+                    ❌ İptal Et
+                </button>
+            }
+            else
+            {
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
+                    <p class="font-bold">Bugün daha fazla maç yapamazsınız</p>
+                    <p>Günlük maç limitinize ulaştınız veya bugün oyundan çıktınız.</p>
+                </div>
+            }
+        </div>
+        
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">🏆 Haftalık Sıralama</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="p-3 text-left">Sıra</th>
+                            <th class="p-3 text-left">Oyuncu</th>
+                            <th class="p-3 text-center">Puan</th>
+                            <th class="p-3 text-center">Averaj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in ViewBag.Rankings)
+                        {
+                            <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <td class="p-3 text-2xl">@item.rank</td>
+                                <td class="p-3 font-semibold">@item.user.UserName</td>
+                                <td class="p-3 text-center font-bold text-blue-600">@item.points</td>
+                                <td class="p-3 text-center font-bold text-green-600">@item.averaj</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/gameHub")
+        .build();
+    
+    let isSearching = false;
+    
+    connection.on("QueueUpdate", (count) => {
+        document.getElementById('queueCount').textContent = count;
+    });
+    
+    connection.on("MatchFound", (gameState) => {
+        window.location.href = '/Home/Game';
+    });
+    
+    connection.on("ForceDisconnect", (reason) => {
+        alert(reason);
+        window.location.href = '/Account/Login';
+    });
+    
+    connection.start().catch(err => console.error(err));
+    
+    setInterval(() => {
+        connection.invoke("UpdateActivity").catch(err => console.error(err));
+    }, 60000);
+    
+    async function findMatch() {
+        if (isSearching) return;
+        
+        isSearching = true;
+        document.getElementById('findMatchBtn').classList.add('hidden');
+        document.getElementById('cancelMatchBtn').classList.remove('hidden');
+        
+        try {
+            const result = await connection.invoke("JoinMatchmaking");
+            if (!result.success) {
+                alert(result.message);
+                isSearching = false;
+                document.getElementById('findMatchBtn').classList.remove('hidden');
+                document.getElementById('cancelMatchBtn').classList.add('hidden');
+            }
+        } catch (err) {
+            console.error(err);
+            isSearching = false;
+            document.getElementById('findMatchBtn').classList.remove('hidden');
+            document.getElementById('cancelMatchBtn').classList.add('hidden');
+        }
+    }
+    
+    async function cancelMatch() {
+        await connection.invoke("LeaveQueue");
+        isSearching = false;
+        document.getElementById('findMatchBtn').classList.remove('hidden');
+        document.getElementById('cancelMatchBtn').classList.add('hidden');
+    }
+</script>
+}

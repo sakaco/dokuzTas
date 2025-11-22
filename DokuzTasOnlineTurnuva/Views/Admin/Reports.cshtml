@@ -1,0 +1,99 @@
+@{
+    ViewData["Title"] = "Haftalık Raporlar";
+    var rankings = ViewBag.Rankings as List<(string rank, DokuzTasOnlineTurnuva.Models.ApplicationUser user, int points, int averaj)>;
+}
+
+<div class="min-h-screen p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-8">
+                📊 Haftalık Raporlar
+            </h1>
+            
+            <div class="mb-6 flex gap-4">
+                <form method="get" class="flex gap-2">
+                    <input type="number" name="weekNumber" value="@ViewBag.WeekNumber" placeholder="Hafta" class="px-4 py-2 border rounded" />
+                    <input type="number" name="year" value="@ViewBag.Year" placeholder="Yıl" class="px-4 py-2 border rounded" />
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded">
+                        Göster
+                    </button>
+                </form>
+            </div>
+            
+            <div class="mb-6 text-center">
+                <h2 class="text-2xl font-bold text-gray-700">
+                    @ViewBag.Year Yılı - Hafta @ViewBag.WeekNumber
+                </h2>
+            </div>
+            
+            @if (rankings != null && rankings.Count >= 3)
+            {
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-yellow-100 to-yellow-200 p-8 rounded-2xl text-center transform hover:scale-105 transition">
+                        <div class="text-6xl mb-4">🥇</div>
+                        <div class="text-2xl font-bold text-yellow-800">@rankings[0].user.UserName</div>
+                        <div class="text-lg text-yellow-600">
+                            <div>@rankings[0].points Puan</div>
+                            <div>@rankings[0].averaj Averaj</div>
+                        </div>
+                    </div>
+                    
+                    @if (rankings.Count > 1)
+                    {
+                        <div class="bg-gradient-to-br from-gray-100 to-gray-300 p-8 rounded-2xl text-center transform hover:scale-105 transition">
+                            <div class="text-6xl mb-4">🥈</div>
+                            <div class="text-2xl font-bold text-gray-800">@rankings[1].user.UserName</div>
+                            <div class="text-lg text-gray-600">
+                                <div>@rankings[1].points Puan</div>
+                                <div>@rankings[1].averaj Averaj</div>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (rankings.Count > 2)
+                    {
+                        <div class="bg-gradient-to-br from-orange-100 to-orange-200 p-8 rounded-2xl text-center transform hover:scale-105 transition">
+                            <div class="text-6xl mb-4">🥉</div>
+                            <div class="text-2xl font-bold text-orange-800">@rankings[2].user.UserName</div>
+                            <div class="text-lg text-orange-600">
+                                <div>@rankings[2].points Puan</div>
+                                <div>@rankings[2].averaj Averaj</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="p-3 text-left">Sıra</th>
+                            <th class="p-3 text-left">Oyuncu</th>
+                            <th class="p-3 text-center">Puan</th>
+                            <th class="p-3 text-center">Averaj</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (rankings != null)
+                        {
+                            @foreach (var item in rankings)
+                            {
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="p-3 text-2xl">@item.rank</td>
+                                    <td class="p-3 font-semibold">
+                                        <a asp-action="PlayerDetail" asp-route-id="@item.user.Id" class="text-blue-600 hover:underline">
+                                            @item.user.UserName
+                                        </a>
+                                    </td>
+                                    <td class="p-3 text-center font-bold text-blue-600">@item.points</td>
+                                    <td class="p-3 text-center font-bold text-green-600">@item.averaj</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
